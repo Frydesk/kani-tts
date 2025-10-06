@@ -16,3 +16,4 @@ echo Starting Kani TTS WebSocket Test CLI...
 python test_ws_cli.py
 
 endlocal
+pause

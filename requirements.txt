@@ -1,9 +1,35 @@
-nemo_toolkit[tts]
+# Core dependencies
 transformers @ git+https://github.com/huggingface/transformers.git
+nemo-toolkit
 fastapi
 uvicorn
 websockets
 asyncio
 scipy
 numpy
+torch
+accelerate
 
+# Audio processing dependencies
+librosa
+soundfile
+matplotlib
+seaborn
+hydra-core
+pytorch-lightning
+lightning
+einops
+lhotse
+sentencepiece
+jiwer
+webdataset
+pyannote-core
+pyannote-metrics
+datasets
+editdistance
+ipython
+wandb
+
+# Note: pynini is not included due to Windows compilation issues
+# The nemo AudioCodecModel may have additional dependency issues
+# For now, the TTSGenerator works independently

@@ -15,3 +15,4 @@ REM Start the WebSocket server
 python start_websocket_server.py
 
 endlocal
+pause

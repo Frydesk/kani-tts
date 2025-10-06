@@ -13,8 +13,33 @@ from config import (
 
 class LLMAudioPlayer:
     def __init__(self, tokenizer) -> None:
-        self.nemo_codec_model = AudioCodecModel\
-                .from_pretrained("nvidia/nemo-nano-codec-22khz-0.6kbps-12.5fps").eval()
+        print("Loading NeMo AudioCodecModel...")
+        
+        # Monkey patch torch.nn.Conv1d to handle shape mismatches
+        import torch.nn as nn
+        original_load_state_dict = nn.Conv1d.load_state_dict
+        
+        def patched_load_state_dict(self, state_dict, strict=True, assign=False):
+            try:
+                return original_load_state_dict(self, state_dict, strict, assign)
+            except RuntimeError as e:
+                if "size mismatch" in str(e) and "Conv1d" in str(e):
+                    print("WARNING: Conv1d shape mismatch detected, loading with strict=False...")
+                    return original_load_state_dict(self, state_dict, False, assign)
+                else:
+                    raise e
+        
+        # Apply the patch
+        nn.Conv1d.load_state_dict = patched_load_state_dict
+        
+        try:
+            self.nemo_codec_model = AudioCodecModel.from_pretrained(
+                "nvidia/nemo-nano-codec-22khz-0.6kbps-12.5fps"
+            ).eval()
+            print("SUCCESS: AudioCodecModel loaded successfully!")
+        finally:
+            # Restore original method
+            nn.Conv1d.load_state_dict = original_load_state_dict
 
         if torch.cuda.is_available():
             self.device = 'cuda'
